@@ -255,3 +255,4 @@ class Player extends Sprite {
     }
   }
 }
+

@@ -2,3 +2,11 @@ body{
     background: black;
     overflow: hidden;
 }
+
+#score {
+    color: aliceblue;
+}
+
+#timer{
+    color: aliceblue;
+}

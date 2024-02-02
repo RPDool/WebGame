@@ -121,19 +121,19 @@ const background = new Sprite({
     x: 0,
     y: 0,
   },
-  imageSrc: './img/background.png',
+  imageSrc: 'img/background.png',
 })
  
 const backgroundImageHeight = 432
     // De 432 is de hoogte van de background image
 
-const camera = {
-  position: {
-    x: 0,
-    y: -backgroundImageHeight + scaledCanvas.height,  
-  },
-}
-
+    const camera = {
+      position: {
+        x: 0,
+        y: -backgroundImageHeight + scaledCanvas.height,
+      },
+    }
+  
 function animate() {
     window.requestAnimationFrame(animate)
     c.fillStyle = 'white'
@@ -167,7 +167,6 @@ function animate() {
       player.lastDirection = 'left'
       player.shouldPanCameraToTheRight({ canvas, camera })
     } else if (player.velocity.y === 0){
-
       if (player.lastDirection === 'right') player.SwitchSprite('Idle')
       else player.SwitchSprite('IdleLeft')
     }
@@ -182,6 +181,12 @@ function animate() {
       else player.SwitchSprite('FallLeft')
     }
     
+    checkCoinCollision(); // Call checkCoinCollision here
+    coins.forEach(coin => {
+        coin.draw();
+    });
+
+    updateScore(); // Update and display the score
 
     c.restore() // Use c.restore() to restore the canvas state
 
@@ -218,3 +223,4 @@ window.addEventListener('keyup', (event) => {
       
   }
 })
+
