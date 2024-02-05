@@ -86,7 +86,7 @@ class Player extends Sprite {
     const cameraboxRightSide = this.camerabox.position.x + this.camerabox.width;
     const scaledDownCanvasWidth = canvas.width / 4; // gedeeld door 4 omdat de canvas met 4 is vergroot
 
-    if (cameraboxRightSide >= 576) return;
+    if (cameraboxRightSide >= 574) return;
     // 576 is de pixel breedte van de background sprite
 
     if (
