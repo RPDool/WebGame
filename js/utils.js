@@ -7,7 +7,7 @@ function collision({ object1, object2 }) {
     object1.position.y <= object2.position.y + object2.height &&
     object1.position.x <= object2.position.x + object2.width &&
     object1.position.x + object1.width >= object2.position.x
-  )
+  );
 }
 
 // Functie om te controleren op een specifieke botsing tussen de speler en een platform
@@ -21,5 +21,5 @@ function platformCollision({ object1, object2 }) {
       object2.position.y + object2.height &&
     object1.position.x <= object2.position.x + object2.width &&
     object1.position.x + object1.width >= object2.position.x
-  )
+  );
 }
