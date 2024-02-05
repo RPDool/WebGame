@@ -1,76 +1,79 @@
 class Player extends Sprite {
   constructor({
-    position,
-    collisionBlocks,
-    platformCollisionBlocks,
-    imageSrc,
-    frameRate,
-    scale = 0.5,
-    animations,
+    position, // positie speler
+    collisionBlocks, // array van vloer-collision
+    platformCollisionBlocks, // array van platform-collision
+    imageSrc, // De image
+    frameRate, // de frames per seconde
+    scale = 0.5, // de schaal
+    animations, // de animaties voor de speler
   }) {
-    super({ imageSrc, frameRate, scale })
+    super({ imageSrc, frameRate, scale }) // Roep de constructor aan
     this.position = position
     this.velocity = {
-      x: 0,
-      y: 1,
+      x: 0, // Horizontale snelheid van de speler (standaard 0)
+      y: 1, // Verticale snelheid van de speler (standaard 1)
     }
 
-    this.collisionBlocks = collisionBlocks
-    this.platformCollisionBlocks = platformCollisionBlocks
+    this.collisionBlocks = collisionBlocks // Array van vloer-collisionblokken
+    this.platformCollisionBlocks = platformCollisionBlocks // Array van platform-collisionblokken
     this.hitbox = {
       position: {
-        x: this.position.x,
-        y: this.position.y,
+        x: this.position.x, // x-positie van de hitbox
+        y: this.position.y, // y-positie van de hitbox
       },
-      width: 10,
-      height: 10,
+      width: 10, // Breedte van de hitbox
+      height: 10, // Hoogte van de hitbox
     }
 
-    this.animations = animations
-    this.lastDirection = 'right'
+    this.animations = animations // Animaties voor de speler
+    this.lastDirection = 'right' // Laatste richting van de speler
 
+    // Voorbereiding van de animatieafbeeldingen
     for (let key in this.animations) {
-      const image = new Image()
-      image.src = this.animations[key].imageSrc
+      const image = new Image() // Nieuw Image object voor elke animatieafbeelding
+      image.src = this.animations[key].imageSrc // source instellen voor elke animatie
 
-      this.animations[key].image = image
+      this.animations[key].image = image // Toevoegen van de afbeelding aan de animatiegegevens
     }
 
+     // Definitie van de camerabox voor het volgen van de speler met de camera
     this.camerabox = {
       position: {
-        x: this.position.x,
-        y: this.position.y,
+        x: this.position.x, // x-positie van de camerabox (standaard gelijk aan spelerpositie)
+        y: this.position.y, // y-positie van de camerabox (standaard gelijk aan spelerpositie)
       },
       width: 200,
       height: 80,
     }
   }
 
+  // Method om de sprite van de speler te wijzigen naar de gegeven animatie
   SwitchSprite(key) {
     if (this.image === this.animations[key].image || !this.loaded) return
 
-    this.currentFrame = 0
-    // als je dit niet erin hebt, kan het gebeuren dat als je op frame 3 of hoger bent in lopen en de dan springt, 
-    //dat de sprite weg flasht, omdat die maar 2 frames heeft
-    this.image = this.animations[key].image
-    this.frameBuffer = this.animations[key].frameBuffer
-    this.frameRate = this.animations[key].frameRate
+    this.currentFrame = 0 // Reset het huidige frame naar 0
+    this.image = this.animations[key].image // Verander de afbeelding naar de afbeelding van de animatie
+    this.frameBuffer = this.animations[key].frameBuffer // Pas het framebuffer van de animatie toe
+    this.frameRate = this.animations[key].frameRate // Pas de framerate van de animatie toe
   }
 
+  // Method om de camerabox van de speler bij te werken
   updateCameraBox(){
     this.camerabox = {
       position: {
-        x: this.position.x - 50,
-        y: this.position.y
+        x: this.position.x - 50, // x-positie van de camerabox met offset voor centrering
+        y: this.position.y // y-positie van de camerabox (gelijk aan spelerpositie)
       },
       width: 200,
       height: 80,
     }
   }
 
+  // Method om horizontale canvasbotsingen voor de speler te controleren en te corrigeren
   checkForHorizontalCanvasCollision() {
-    const leftEdge = -30;  // Adjusted left edge to move player more to the left
-    const rightEdge = canvas.width - this.hitbox.width + -490;  // Adjusted right edge to move player more to the left
+    const leftEdge = -30; // linker muur collision
+    const rightEdge = canvas.width - this.hitbox.width + -490;  // rechter muur collision
 
     if (this.position.x < leftEdge) {
       this.position.x = leftEdge;
@@ -81,10 +84,10 @@ class Player extends Sprite {
 
   shouldPanCameraToTheLeft({ canvas, camera }) {
     const cameraboxRightSide = this.camerabox.position.x + this.camerabox.width
-    const scaledDownCanvasWidth = canvas.width / 4
+    const scaledDownCanvasWidth = canvas.width / 4 // gedeeld door 4 omdat de canvas met 4 is vergroot
 
     if (cameraboxRightSide >= 576) return
-    // 576
+    // 576 is de pixel breedte van de background sprite
 
     if (
       cameraboxRightSide >=
@@ -164,95 +167,117 @@ class Player extends Sprite {
   }
 
   checkForHorizontalCollisions() {
+    // Loop door alle vloer-collisionblokken om horizontale botsingen te controleren
     for (let i = 0; i < this.collisionBlocks.length; i++) {
-      const collisionBlock = this.collisionBlocks[i]
+      const collisionBlock = this.collisionBlocks[i];
 
+      // Controleer of er een botsing is tussen de speler en het huidige collisionblok
       if (
         collision({
           object1: this.hitbox,
           object2: collisionBlock,
         })
       ) {
+        // Als de speler naar rechts beweegt
         if (this.velocity.x > 0) {
-          this.velocity.x = 0;
+          this.velocity.x = 0; // Stop de beweging van de speler
 
+          // Bereken de offset om de speler buiten het collisionblok te plaatsen
           const offset = this.position.x - collisionBlock.position.x - this.hitbox.width;
 
+          // Pas de positie van de speler aan om buiten het collisionblok te plaatsen
           this.position.x = collisionBlock.position.x - offset - 0.01;
-          break;
+          break; // Stop de loop zodra een botsing is gedetecteerd
         }
 
+        // Als de speler naar links beweegt
         if (this.velocity.x < 0) {
-          this.velocity.x = 0;
+          this.velocity.x = 0; // Stop de beweging van de speler
 
+          // Bereken de offset om de speler buiten het collisionblok te plaatsen
           const offset = collisionBlock.position.x + collisionBlock.width - this.position.x;
 
+          // Pas de positie van de speler aan om buiten het collisionblok te plaatsen
           this.position.x = collisionBlock.position.x + collisionBlock.width - offset + 0.01;
-          break;
+          break; // Stop de loop zodra een botsing is gedetecteerd
         }
       }
     }
   }
 
-
   applyGravity() {
-    this.velocity.y += gravity
-    this.position.y += this.velocity.y
+    // Voeg zwaartekracht toe aan de verticale snelheid van de speler
+    this.velocity.y += gravity;
+    // Pas de verticale positie van de speler aan op basis van de snelheid
+    this.position.y += this.velocity.y;
   }
 
   checkForVerticalCollisions() {
+    // Loop door alle vloer-collisionblokken om verticale botsingen te controleren
     for (let i = 0; i < this.collisionBlocks.length; i++) {
       const collisionBlock = this.collisionBlocks[i];
 
+      // Controleer of er een botsing is tussen de speler en het huidige collisionblok
       if (
         collision({
           object1: this.hitBox,
           object2: collisionBlock,
         })
       ) {
+        // Als de speler naar beneden beweegt
         if (this.velocity.y > 0) {
-          this.velocity.y = 0;
+          this.velocity.y = 0; // Stop de verticale beweging van de speler
 
+          // Bereken de offset om de speler buiten het collisionblok te plaatsen
           const offset =
             this.hitBox.position.y - this.position.y + this.hitBox.height;
 
+          // Pas de verticale positie van de speler aan om buiten het collisionblok te plaatsen
           this.position.y = collisionBlock.position.y - offset - 0.01;
-          break;
+          break; // Stop de loop zodra een botsing is gedetecteerd
         }
 
+        // Als de speler naar boven beweegt
         if (this.velocity.y < 0) {
-          this.velocity.y = 0;
+          this.velocity.y = 0; // Stop de verticale beweging van de speler
 
+          // Bereken de offset om de speler buiten het collisionblok te plaatsen
           const offset = this.hitBox.position.y - this.position.y;
 
+          // Pas de verticale positie van de speler aan om buiten het collisionblok te plaatsen
           this.position.y =
             collisionBlock.position.y + collisionBlock.height - offset + 0.01;
-          break;
+          break; // Stop de loop zodra een botsing is gedetecteerd
         }
       }
     }
 
-    // platform collision
+    // Loop door alle platform-collisionblokken om verticale botsingen te controleren
     for (let i = 0; i < this.platformCollisionBlocks.length; i++) {
       const platformCollisionBlock = this.platformCollisionBlocks[i];
 
+      // Controleer of er een botsing is tussen de speler en het huidige platform-collisionblok
       if (
         platformCollision({
           object1: this.hitBox,
           object2: platformCollisionBlock,
         })
       ) {
+        // Als de speler naar beneden beweegt
         if (this.velocity.y > 0) {
-          this.velocity.y = 0;
+          this.velocity.y = 0; // Stop de verticale beweging van de speler
 
+          // Bereken de offset om de speler buiten het platform-collisionblok te plaatsen
           const offset =
             this.hitBox.position.y - this.position.y + this.hitBox.height;
 
+          // Pas de verticale positie van de speler aan om buiten het platform-collisionblok te plaatsen
           this.position.y = platformCollisionBlock.position.y - offset - 0.01;
-          break;
+          break; // Stop de loop zodra een botsing is gedetecteerd
         }
       }
     }
   }
 }
+
 

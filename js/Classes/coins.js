@@ -1,81 +1,82 @@
-const coins = []; // Array to store coin objects
+const coins = []; // Array om muntobjecten op te slaan
 
 class Coin {
   constructor(position) {
-    this.position = position;
-    this.radius = 8; // Adjust radius as needed
-    this.isCollected = false;
+    this.position = position; // Positie van de munt
+    this.radius = 8; // Straal van de munt (voor de cirkel)
+    this.isCollected = false; // Status van de munt (verzameld of niet)
   }
 
   draw() {
+    // Tekent de munt op het canvas als deze nog niet is verzameld
     if (!this.isCollected) {
-      c.fillStyle = 'gold';
-      c.beginPath();
-      c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
-      c.fill();
+      c.fillStyle = 'gold'; // Kleur van de munt
+      c.beginPath(); // Begin een nieuw pad voor het tekenen van de munt
+      c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2); // Tekent een cirkel (munt)
+      c.fill(); // Vul de cirkel met de opgegeven kleur
     }
   }
 }
 
-// Function to check collision between player and coins
-const pickupRange = 3; // Adjust pickup range as needed
+// Functie om te controleren op botsingen tussen speler en munten
+const pickupRange = 3; // Afstand waarbinnen een munt kan worden opgepikt (aangepast)
 
 function checkCoinCollision() {
   for (let i = 0; i < coins.length; i++) {
     const coin = coins[i];
+    // Controleert of de speler binnen het bereik van een munt is en de munt nog niet is verzameld
     if (!coin.isCollected &&
       player.position.x < coin.position.x + pickupRange &&
       player.position.x + player.width > coin.position.x - pickupRange &&
       player.position.y < coin.position.y + pickupRange &&
       player.position.y + player.height > coin.position.y - pickupRange) {
-      coin.isCollected = true;
-      score++; // Increase score when a coin is collected
-      if (score === 5) { // Check if all coins are collected
-        clearInterval(timerInterval); // Stop the timer when all coins are collected
+      coin.isCollected = true; // Markeer de munt als verzameld
+      score++; // Verhoog de score wanneer een munt wordt verzameld
+      if (score === 5) { // Controleer of alle munten zijn verzameld
+        clearInterval(timerInterval); // Stop de timer wanneer alle munten zijn verzameld
       }
-      // Perform any actions when coin is collected
     }
   }
 }
 
-// Function to create 5 new coins at random positions
+// Functie om 5 nieuwe munten op willekeurige posities te maken
 function createCoins() {
   for (let i = 0; i < 5; i++) {
-    const coinX = Math.random() * canvas.width;
-    const coinY = Math.random() * (300) + 100; // Adjusted range to ensure max y-level of 400
-    console.log("Coin Y:", coinY); // Add this line for debugging
-    const newCoin = new Coin({ x: coinX, y: coinY });
-    coins.push(newCoin);
+    const coinX = Math.random() * canvas.width; // X-positie van de munt
+    const coinY = Math.random() * (300) + 100; // Y-positie van de munt (aangepast bereik om ervoor te zorgen dat max. y-niveau 400 is)
+    // console.log("Coin Y:", coinY);
+    const newCoin = new Coin({ x: coinX, y: coinY }); // Maak een nieuw muntobject
+    coins.push(newCoin); // Voeg het nieuwe muntobject toe aan de array van munten
   }
 }
 
-let score = 0; // Initialize score
-const scoreElement = document.getElementById('score'); // Get the score element
-const timerElement = document.getElementById('timer'); // Get the timer element
-let timerInterval; // Variable to hold the timer interval
-let time = 0; // Timer variable
+let score = 0; // Initialiseer de score
+const scoreElement = document.getElementById('score'); // Haal het score-element op uit de HTML
+const timerElement = document.getElementById('timer'); // Haal het timer-element op uit de HTML
+let timerInterval; // Variabele om het timerinterval vast te houden
+let time = 0; // Timer variabele
 
 function updateScore() {
-    scoreElement.textContent = `Score: ${score}`; // Update the score element content
+    scoreElement.textContent = `Score: ${score}`; // Werk de inhoud van het score-element bij
 }
 
 function updateTimer() {
   time++;
-  timerElement.textContent = `Time: ${time}s`; // Update the timer element content
+  timerElement.textContent = `Time: ${time}s`; // Werk de inhoud van het timer-element bij
 }
 
-// Start the timer when the page loads
+// Start de timer wanneer de pagina wordt geladen
 timerInterval = setInterval(updateTimer, 1000);
 
-// Call createCoin function to initially create coins
+// Roep de createCoin-functie aan om aanvankelijk munten te maken
 createCoins();
 
-// Update function to call checkCoinCollision and draw coins
+// Update functie om checkCoinCollision aan te roepen en munten te tekenen
 function update() {
-  // Other update logic...
-  checkCoinCollision();
+  // Andere update logica...
+  checkCoinCollision(); // Controleer op muntbotsingen
   coins.forEach(coin => {
-      coin.draw();
+      coin.draw(); // Teken alle munten op het canvas
   });
-  updateScore(); // Update the score display
+  updateScore(); // Werk de scoreweergave bij
 }
