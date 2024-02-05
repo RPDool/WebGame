@@ -1,8 +1,8 @@
 const canvas = document.querySelector("canvas"); // Selecteer het canvas element
 const c = canvas.getContext("2d"); // Haal de 2D-rendercontext op
 
-canvas.width = window.innerWidth; // Stel de breedte van het canvas in
-canvas.height = window.innerHeight - 50; // Stel de hoogte van het canvas in
+canvas.width = 1024; // Stel de breedte van het canvas in
+canvas.height = 576; // Stel de hoogte van het canvas in
 
 // Definieer een geschaalde versie van het canvas voor eenvoudigere berekeningen
 const scaledCanvas = {
@@ -169,14 +169,14 @@ function animate() {
   // Controleer of de 'd'-toets is ingedrukt (rechts bewegen)
   if (keys.d.pressed) {
     player.SwitchSprite("Run"); // Verander de sprite van de speler naar 'Run'
-    player.velocity.x = 1; // Zet de horizontale snelheid van de speler op 1 (rechts)
+    player.velocity.x = 0.9; // Zet de horizontale snelheid van de speler op 1 (rechts)
     player.lastDirection = "right"; // Onthoud de laatste richting (rechts)
     player.shouldPanCameraToTheLeft({ canvas, camera });
   }
   // Controleer of de 'a'-toets is ingedrukt (links bewegen)
   else if (keys.a.pressed) {
     player.SwitchSprite("RunLeft"); // Verander de sprite van de speler naar 'RunLeft'
-    player.velocity.x = -1; // Zet de horizontale snelheid van de speler op -1 (links)
+    player.velocity.x = -0.9; // Zet de horizontale snelheid van de speler op -1 (links)
     player.lastDirection = "left"; // Onthoud de laatste richting (links)
     player.shouldPanCameraToTheRight({ canvas, camera });
   }
